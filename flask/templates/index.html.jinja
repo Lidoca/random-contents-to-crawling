@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Company List</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+</head>
+
+<body>
+    <div id="page-content">
+        <header>
+            <nav>
+                <ul>
+                    <li><a href="{{ url_for('index') }}">Home</a></li>
+                    <li><a href="{{ url_for('about') }}">About Us</a></li>
+                </ul>
+            </nav>
+        </header>
+        <main>
+            <section id="company-heading">
+                <h1>Company Listings</h1>
+            </section>
+            <section id="company-list">
+                {% for company in companies %}
+                <article class="company-entry entry-number-{{ loop.index }}">
+                    <h2>{{ company.name }}</h2>
+                    <p>{{ company.description }}</p>
+                    <p>
+                        Established Date:<br />
+                        <time datetime="{{ company.established_date }}">{{ company.established_date_pretty }}</time>
+                    </p>
+                </article>
+                {% else %}
+                <p>No companies found.</p>
+                {% endfor %}
+            </section>
+            <footer>
+                <section class="pagination">
+                    {# show previous link #}
+                    {% if prev_url %}
+                    <a href="{{ prev_url }}">Previous</a>
+                    {% endif %}
+
+                    {% if page - 3 >= 1 %}
+                    {# Always show the first page #}
+                    <a href="{{ url_for('index', page=1) }}">1</a>
+                    {% if page != 4 %} {# Avoid showing dots when they're not needed #}
+                    <span>...</span>
+                    {% endif %}
+                    {% endif %}
+
+                    {# Calculate start and end of page range #}
+                    {% set start_page = [1, page - 2]|max %}
+                    {% set end_page = [total_pages, page + 2]|min %}
+
+                    {# show pages within range #}
+                    {% for i in range(start_page, end_page + 1) %}
+                    {% if i == page %}
+                    <span class="current-page">{{i}}</span>
+                    {% else %}
+                    <a href="{{ url_for('index', page=i) }}">{{i}}</a>
+                    {% endif %}
+                    {% endfor %}
+
+                    {% if page + 3 <= total_pages %} {% if page !=total_pages - 3 %} {# Avoid showing dots when they're
+                        not needed #} <span>...</span>
+                        {% endif %}
+                        {# Always show the last page #}
+                        <a href="{{ url_for('index', page=total_pages) }}">{{total_pages}}</a>
+                        {% endif %}
+
+                        {# show next link #}
+                        {% if next_url %}
+                        <a href="{{ next_url }}">Next</a>
+                        {% endif %}
+                </section>
+            </footer>
+        </main>
+    </div>
+    <footer>
+        <p>Website that is free to use for web crawling</p>
+    </footer>
+</body>
+
+</html>
